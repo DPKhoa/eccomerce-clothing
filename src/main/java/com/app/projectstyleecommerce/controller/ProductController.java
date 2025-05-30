@@ -24,8 +24,8 @@ public class ProductController extends CommonController<ProductEntity,Long, Prod
         return getService().findAll();
     }
     @GetMapping("/{id}")
-    public ResponseEntity<ProductEntity> getProductById(@RequestParam Long id) throws Exception {
-        return ResponseEntity.ok(getService().getById(id));
+    public ResponseEntity<ProductEntity> getProductById( @PathVariable Long id) throws Exception {
+        return ResponseEntity.ok(getService().findById(id));
     }
     @PutMapping("/{id}")
     public ResponseEntity<ProductEntity> updateProduct(@PathVariable Long id, @RequestBody Map<String, Object> product) throws Exception {

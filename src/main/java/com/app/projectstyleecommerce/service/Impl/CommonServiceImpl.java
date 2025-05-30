@@ -22,14 +22,17 @@ public class CommonServiceImpl<T,ID, R extends CommonJpaRepository<T, ID>> imple
         return repo.save(entity);
     }
 
+
     @Override
-    public T getById(ID id) {
+    public T findById(ID id) throws Exception {
         Optional<T> entityOptional = repo.findById(id);
         if (!entityOptional.isPresent()) {
             throw AppException.of(AppMessageConstant.ENTITY_NOT_FOUND);
         }
-        return entityOptional.get();
+        return (T) entityOptional;
     }
+
+
 
     @Override
     public List<T> findAll() {

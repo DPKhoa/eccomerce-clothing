@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class ProductServiceImpl extends CommonServiceImpl<ProductEntity,Long, ProductRepository> implements ProductService {
@@ -32,8 +33,8 @@ public class ProductServiceImpl extends CommonServiceImpl<ProductEntity,Long, Pr
     }
 
     @Override
-    public ProductEntity getById(Long productId) {
-        return getRepo().getById(productId);
+    public ProductEntity findById(Long productId) {
+        return getRepo().findById(productId).orElse(null);
     }
 
     @Override

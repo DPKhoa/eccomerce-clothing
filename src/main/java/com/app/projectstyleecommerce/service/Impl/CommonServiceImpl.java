@@ -7,6 +7,7 @@ import com.app.projectstyleecommerce.service.CommonService;
 import lombok.Getter;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Getter
@@ -17,7 +18,7 @@ public class CommonServiceImpl<T,ID, R extends CommonJpaRepository<T, ID>> imple
         this.repo = repo;
     }
     @Override
-    public T save(T entity) {
+    public T save(T entity) throws Exception {
         return repo.save(entity);
     }
 
@@ -31,18 +32,19 @@ public class CommonServiceImpl<T,ID, R extends CommonJpaRepository<T, ID>> imple
     }
 
     @Override
-    public List<T> getAll() {
+    public List<T> findAll() {
         return repo.findAll();
     }
 
     @Override
-    public void deleteById(ID id) {
-        if(!existsById(id)) throw new AppException(AppMessageConstant.ENTITY_NOT_FOUND);
-        repo.deleteById(id);
+    public void deleteById(ID id) throws Exception {
+        if(!existsById(id)) {
+            repo.deleteById(id);
+        }
     }
 
     @Override
-    public boolean existsById(ID id) {
+    public boolean existsById(ID id) throws Exception {
         return false;
     }
 
@@ -50,4 +52,6 @@ public class CommonServiceImpl<T,ID, R extends CommonJpaRepository<T, ID>> imple
     public void deleteByIdIns(List<ID> ids) {
 
     }
+
+
 }

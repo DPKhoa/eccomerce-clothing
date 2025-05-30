@@ -1,7 +1,9 @@
 package com.app.projectstyleecommerce.exception;
 
 import com.app.projectstyleecommerce.model.ErrorModel;
+import lombok.Getter;
 
+@Getter
 public class AppException extends RuntimeException {
     private final ErrorModel errorModel;
     public AppException(ErrorModel errorModel) {

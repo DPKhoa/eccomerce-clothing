@@ -13,6 +13,6 @@ public CommonController(S service) {
     protected  S getService() {return service;}
     @GetMapping
     public List<T> getAll() {
-        return service.getAll();
+        return service.findAll();
     }
 }

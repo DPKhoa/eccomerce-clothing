@@ -5,17 +5,26 @@ import com.app.projectstyleecommerce.repository.ProductRepository;
 import com.app.projectstyleecommerce.service.ProductService;
 import io.micrometer.common.util.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+
 
 @Service
 public class ProductServiceImpl extends CommonServiceImpl<ProductEntity,Long, ProductRepository> implements ProductService {
     public ProductServiceImpl(ProductRepository repo) {
         super(repo);
+       
     }
     public static final int PRODUCT_MAX_LENGTH = 50;
+   
+
+
     public void validateProductWhenCreated(ProductEntity product) throws Exception {
         if(StringUtils.isBlank(product.getProduct_name())){
             throw new Exception("Product name is required");
@@ -77,4 +86,7 @@ public class ProductServiceImpl extends CommonServiceImpl<ProductEntity,Long, Pr
             });
             return getRepo().save(product);
         }
+
+   
+    
 }

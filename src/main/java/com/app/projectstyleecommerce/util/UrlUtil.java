@@ -9,4 +9,5 @@ public class UrlUtil {
         return domainUrl + apiPath + resourcePath;
     }
     public static final String PRODUCT_URL = BASE_URL + "/products";
+    public static final String FILE_URL = BASE_URL + "/files";
 }

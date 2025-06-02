@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Table(name = "product")
 @Getter
@@ -16,8 +18,9 @@ public class ProductEntity extends BaseEntity{
 
     @Column()
     private String product_name;
-    @Column(name="image")
-    private String image;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ImageEntity> images; // Danh sách hình ảnh liên quan
+
     @Column(name="description")
     private String description;
 

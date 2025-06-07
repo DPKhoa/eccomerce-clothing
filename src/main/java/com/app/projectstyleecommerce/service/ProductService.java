@@ -1,12 +1,13 @@
 package com.app.projectstyleecommerce.service;
 
 import com.app.projectstyleecommerce.entity.ProductEntity;
+import com.app.projectstyleecommerce.model.dto.ProductUpdateDto;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 public interface ProductService extends CommonService<ProductEntity, Long> {
-    ProductEntity update(Long id, Map<String, Object> updateProduct, MultipartFile file) throws Exception;
-    String uploadImage(Long productId, MultipartFile file) throws IOException;
+    CompletableFuture<ProductEntity> update(Long id, ProductUpdateDto updateProduct, MultipartFile file) throws Exception;
+
 }

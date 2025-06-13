@@ -7,6 +7,6 @@ import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
 public interface ImageService extends CommonService<ImageEntity, Long>{
-    public CompletableFuture<ImageEntity> uploadImageAsync(Long productId, MultipartFile file) throws IOException;
-    public void delete(Long imageId) throws IOException;
+     CompletableFuture<ImageEntity> uploadImageAsync(Long productId, MultipartFile file) throws IOException;
+     void delete(Long imageId) throws IOException;
 }

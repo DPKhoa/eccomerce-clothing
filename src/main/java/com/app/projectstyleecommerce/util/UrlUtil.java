@@ -12,4 +12,8 @@ public class UrlUtil {
 
     public static final String FILE_URL = BASE_URL + "/files";
 
+    public static final String USER_URL = BASE_URL + "/users";
+
+    public static final String CART_URL = BASE_URL + "/carts";
+
 }

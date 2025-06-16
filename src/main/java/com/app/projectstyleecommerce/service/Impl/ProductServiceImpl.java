@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -83,27 +84,37 @@ public class ProductServiceImpl extends CommonServiceImpl<ProductEntity,Long, Pr
 
 
     @Override
-        public CompletableFuture<ProductEntity> update(Long id, ProductUpdateDto updateProduct, MultipartFile imageFile) throws Exception {
-            ProductEntity product = getRepo().findById(id).orElseThrow(()-> new Exception("Product is not found"));
+    public CompletableFuture<ProductEntity> update(Long id, ProductUpdateDto updateProduct, MultipartFile imageFile) throws Exception {
+        ProductEntity product = getRepo().findById(id).orElseThrow(() -> new Exception("Product is not found"));
 
         if (updateProduct.getProduct_name() != null) product.setProduct_name(updateProduct.getProduct_name());
         if (updateProduct.getDescription() != null) product.setDescription(updateProduct.getDescription());
 
-        CompletableFuture<ProductEntity> future = CompletableFuture.completedFuture(product);
+        if (product.getImageList() == null) {
+            product.setImageList(new ArrayList<>());
+        }
+
+        CompletableFuture<ProductEntity> future;
+
         if (imageFile != null && !imageFile.isEmpty()) {
-            CompletableFuture<ImageEntity> imageEntityFuture = imageService.uploadImageAsync(id, imageFile);
-            future = imageEntityFuture.thenApply(imageEntity -> {
-                product.getImages().add(imageEntity);
-                return getRepo().save(product);
-            });
+            future = imageService.uploadImageAsync(id, imageFile)
+                    .thenApply(imageEntity -> {
+                        product.getImageList().add(imageEntity);
+                        return getRepo().save(product);
+                    });
         } else {
-            future = CompletableFuture.completedFuture(getRepo().save(product));
+            future = CompletableFuture.supplyAsync(() -> getRepo().save(product));
         }
 
         return future.exceptionally(throwable -> {
-            throw AppException.of(new ErrorModel(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Loi khi cap nhat: " + throwable.getMessage()));
+            throwable.printStackTrace(); // in lỗi để theo dõi
+            throw AppException.of(new ErrorModel(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    "Lỗi khi cập nhật: " + throwable.getMessage()
+            ));
         });
     }
+
 
 
 

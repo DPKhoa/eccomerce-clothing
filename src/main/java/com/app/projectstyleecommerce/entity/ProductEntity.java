@@ -19,7 +19,7 @@ public class ProductEntity extends BaseEntity{
     @Column()
     private String product_name;
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<ImageEntity> images; // Danh sách hình ảnh liên quan
+    private List<ImageEntity> imageList; // Danh sách hình ảnh liên quan
 
     @Column(name="description")
     private String description;

@@ -10,6 +10,8 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 @Getter
@@ -22,4 +24,9 @@ public  abstract class  BaseEntity {
     @LastModifiedDate
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+    public BaseEntity() {
+        if (this instanceof CartEntity) {
+            ((CartEntity) this).setItems(new ArrayList<>());
+        }
+    }
 }

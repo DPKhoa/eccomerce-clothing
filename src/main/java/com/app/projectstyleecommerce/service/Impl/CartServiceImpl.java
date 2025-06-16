@@ -11,6 +11,7 @@ import com.app.projectstyleecommerce.service.CartService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,10 +38,10 @@ public class CartServiceImpl extends CommonServiceImpl<CartEntity, Long, CartRep
                     CartEntity cart = CartEntity.builder()
                             .user(user)
                             .build();
+                    cart.setItems(new ArrayList<>()); // Đảm bảo khởi tạo
                     user.getCarts().add(cart);
                     return getRepo().save(cart);
                 });
-
 
     }
     @Transactional
@@ -48,8 +49,12 @@ public class CartServiceImpl extends CommonServiceImpl<CartEntity, Long, CartRep
         CartEntity cart = getOrCreateCart(userId);
         ProductEntity product = productRepository.findById(productId)
                 .orElseThrow(()-> new RuntimeException("Product not found"));
+        System.out.println("Cart ID: " + cart.getId() + ", Items size: " + cart.getItems().size());
         // Kiễm tra xem sản phẩm có trong giỏ hàng không ?
-        CartItemEntity existingItem = cart.getItems().stream().filter(item -> item.getProduct().equals(productId)).findFirst().orElse(null);
+        CartItemEntity existingItem = cart.getItems() != null ? cart.getItems().stream()
+                .filter(item -> item.getProduct().getId().equals(productId))
+                .findFirst()
+                .orElse(null) : null;
         if(existingItem != null){
             existingItem.setQuantity((int) (existingItem.getQuantity() + quantity));
 
@@ -58,7 +63,7 @@ public class CartServiceImpl extends CommonServiceImpl<CartEntity, Long, CartRep
                     .cart(cart)
                     .product(product)
                     .quantity(quantity)
-                    .priceAtTime(String.valueOf(product.getPrice()))
+                    .priceAtTime((double) product.getPrice())
                     .build();
             cart.getItems().add(newItem);
         }

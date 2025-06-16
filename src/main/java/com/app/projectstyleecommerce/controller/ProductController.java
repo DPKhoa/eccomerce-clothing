@@ -7,8 +7,8 @@ import com.app.projectstyleecommerce.service.ImageService;
 import com.app.projectstyleecommerce.service.ProductService;
 import com.app.projectstyleecommerce.util.UrlUtil;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -58,21 +58,18 @@ public class ProductController extends CommonController<ProductEntity,Long, Prod
     }
 
 // upload Image
-    @PostMapping("/{id}/image")
-    @Async
-    public CompletableFuture<ResponseEntity<?>> uploadImageAsync(
-            @PathVariable Long id,
-            @RequestPart("file") MultipartFile file) {
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                CompletableFuture<ImageEntity> imageEntity = imageService.uploadImageAsync(id, file); // Gọi service đồng bộ
-                return ResponseEntity.ok(imageEntity);
-            } catch (IOException e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body(null);
-            }
-        });
+@PostMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+public ResponseEntity<?> uploadImage(
+        @PathVariable Long id,
+        @RequestPart("file") MultipartFile file) {
+    try {
+        ImageEntity image = imageService.uploadImageAsync(id, file).get(); // blocking get()
+        return ResponseEntity.ok(image);
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
     }
+}
+
     //Delete image
     @DeleteMapping("/{id}/image/{imageId}")
     public ResponseEntity<Void> deleteImage(

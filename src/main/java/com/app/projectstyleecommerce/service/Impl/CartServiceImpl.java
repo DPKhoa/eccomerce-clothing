@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+
 
 @Service
 public class CartServiceImpl extends CommonServiceImpl<CartEntity, Long, CartRepository> implements CartService  {
@@ -56,7 +56,7 @@ public class CartServiceImpl extends CommonServiceImpl<CartEntity, Long, CartRep
                 .findFirst()
                 .orElse(null) : null;
         if(existingItem != null){
-            existingItem.setQuantity((int) (existingItem.getQuantity() + quantity));
+            existingItem.setQuantity(existingItem.getQuantity() + quantity);
 
         }else {
             CartItemEntity newItem =  CartItemEntity.builder()
@@ -78,12 +78,11 @@ public class CartServiceImpl extends CommonServiceImpl<CartEntity, Long, CartRep
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Item not found in cart"));
         if (quantity <= 0) {
-            cart.getItems().remove(item);
-            getRepo().delete(item.getCart());
+            cart.getItems().remove(item); // Hibernate sẽ xóa item nhờ orphanRemoval
         } else {
-            item.setQuantity(quantity);
+            item.setQuantity(quantity); // Cập nhật số lượng
         }
-        return getRepo().save(cart);
+        return getRepo().save(cart); // Đảm bảo lưu lại nếu cần
     }
 
     @Transactional
@@ -94,14 +93,13 @@ public class CartServiceImpl extends CommonServiceImpl<CartEntity, Long, CartRep
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Item not found in cart"));
         cart.getItems().remove(item);
-        getRepo().delete(item.getCart());
         getRepo().save(cart);
     }
 
     @Transactional
     public CartEntity getCart(Long userId) {
         List<CartEntity> carts = getRepo().findByUserId(userId);
-        return (CartEntity) carts;
+        return carts.stream().findFirst().orElse(null); // Trả null nếu không có
     }
 
 }

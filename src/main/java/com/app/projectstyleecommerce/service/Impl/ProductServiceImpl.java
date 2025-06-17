@@ -11,6 +11,7 @@ import com.app.projectstyleecommerce.service.ImageService;
 import com.app.projectstyleecommerce.service.ProductService;
 import io.micrometer.common.util.StringUtils;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 
@@ -84,35 +86,25 @@ public class ProductServiceImpl extends CommonServiceImpl<ProductEntity,Long, Pr
 
 
     @Override
-    public CompletableFuture<ProductEntity> update(Long id, ProductUpdateDto updateProduct, MultipartFile imageFile) throws Exception {
-        ProductEntity product = getRepo().findById(id).orElseThrow(() -> new Exception("Product is not found"));
+    @Transactional
+    public CompletableFuture<ProductEntity> update(Long id, ProductUpdateDto updateProduct) throws Exception {
+        ProductEntity product = getRepo().findById(id)
+                .orElseThrow(() -> new Exception("Product is not found"));
 
-        if (updateProduct.getProduct_name() != null) product.setProduct_name(updateProduct.getProduct_name());
-        if (updateProduct.getDescription() != null) product.setDescription(updateProduct.getDescription());
+        Optional.ofNullable(updateProduct.getProduct_name()).ifPresent(product::setProduct_name);
+        Optional.ofNullable(updateProduct.getDescription()).ifPresent(product::setDescription);
+        Optional.of(updateProduct.getPrice()).ifPresent(product::setPrice);
 
-        if (product.getImageList() == null) {
-            product.setImageList(new ArrayList<>());
-        }
 
-        CompletableFuture<ProductEntity> future;
-
-        if (imageFile != null && !imageFile.isEmpty()) {
-            future = imageService.uploadImageAsync(id, imageFile)
-                    .thenApply(imageEntity -> {
-                        product.getImageList().add(imageEntity);
-                        return getRepo().save(product);
-                    });
-        } else {
-            future = CompletableFuture.supplyAsync(() -> getRepo().save(product));
-        }
-
-        return future.exceptionally(throwable -> {
-            throwable.printStackTrace(); // in lỗi để theo dõi
-            throw AppException.of(new ErrorModel(
-                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                    "Lỗi khi cập nhật: " + throwable.getMessage()
-            ));
-        });
+        // Không cần xử lý imageList ở đây nữa
+        return CompletableFuture.supplyAsync(() -> getRepo().save(product))
+                .exceptionally(throwable -> {
+                    throwable.printStackTrace();
+                    throw AppException.of(new ErrorModel(
+                            HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                            "Lỗi khi cập nhật: " + throwable.getMessage()
+                    ));
+                });
     }
 
 

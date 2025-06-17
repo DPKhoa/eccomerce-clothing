@@ -42,13 +42,8 @@ public class ProductController extends CommonController<ProductEntity,Long, Prod
     }
 
     @PutMapping("/{id}")
-    public CompletableFuture<ResponseEntity<ProductEntity>> updateProduct(
-            @PathVariable Long id,
-            @RequestPart ProductUpdateDto updateProduct,
-            @RequestPart(value = "image", required = false) MultipartFile imageFile) throws Exception {
-        return getService().update(id, updateProduct, imageFile)
-                .thenApply(ResponseEntity::ok)
-                .exceptionally(throwable -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+    public CompletableFuture<ProductEntity> updateProduct(@PathVariable Long id, @RequestBody ProductUpdateDto updateProduct) throws Exception {
+        return getService().update(id, updateProduct);
     }
 
     @DeleteMapping("/{id}")

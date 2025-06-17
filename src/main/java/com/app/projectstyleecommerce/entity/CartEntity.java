@@ -22,7 +22,7 @@ public class CartEntity extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     @JsonIgnore // Bỏ qua trường user khi serialize
     @JsonBackReference // Ngắt vòng lặp từ phía con
